@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listProduct } from "../service/ProductService";
+import { create, findAll, remove, update } from "../service/ProductService";
 import { ProductGrid } from "./ProductGrid";
 import PropTypes from "prop-types";
 import { ProductForm } from "./ProductForm";
@@ -14,24 +14,35 @@ export const ProductApp = ({ title }) => {
         price: ''
     });
 
+    const getProduct = async () => {
+
+        const result = await findAll();
+        console.log(result);
+        setProducts(result.data._embedded.products);
+    }
+
     useEffect(() => {
-        const result = listProduct();
-        setProducts(result);
+        getProduct();
+
     }, []);
 
-    const handlerAddProduct = (product) => {
+    const handlerAddProduct = async (product) => {
         if (product.id > 0) {
             // Actualizar el producto existente
+            const response = await update(product);
             setProducts(products.map(prod =>
-                prod.id === product.id ? product : prod
+                prod.id === response.data.id ? product : prod,
             ));
         } else {
             // Agregar un nuevo producto
-            setProducts([...products, { ...product, id: new Date().getTime() }]);
+            const response = await create(product);
+            setProducts([...products, { ...response.data }]);
         }
     };
 
     const handlerRemuveProducto = (id) => {
+        // Eliminar el producto
+        remove(id);
         setProducts(products.filter(product => product.id !== id));
     };
 

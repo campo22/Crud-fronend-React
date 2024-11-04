@@ -18,6 +18,7 @@ export const ProductDetail = ({ hadlerSelect, hadlerRemuve, product }) => {
                 </button>
             </td>
         </tr>
+
     );
 };
 
